@@ -1,24 +1,30 @@
 
-
-import 'dart:ffi';
-
+import 'package:expanses/Expenses.dart';
 import 'package:expanses/model_expenses.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+class _ChangeExpensesState extends State<StatefulWidget>{
 
-class _AddExpensesState extends State<StatefulWidget>{
-    double _price;
+    GlobalKey<FormState> _formKey =  GlobalKey<FormState>();
+
+    String _price;
     String _name;
-    final ExpenseModel _model;
-    GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-    _AddExpensesState(this._model);
+    ExpenseModel _model;
+    int _index;
+    bool mode;
+    String buttn_text = "Add";
+    _ChangeExpensesState(this._model, this.mode, this._index)
+    {
+        if (!mode){
+            _price = _model.GetPrice(_index);
+            _name = _model.GetLabel(_index);
+            buttn_text = "Update";
+        }
+    }
 
     @override
     Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
 
         body: Form(
@@ -31,6 +37,7 @@ class _AddExpensesState extends State<StatefulWidget>{
                           decoration: InputDecoration(
                               hintText: "Price",
                           ),
+                          initialValue: _price,
                           keyboardType: TextInputType.number,
                           autovalidate: true,
                           validator: (value){
@@ -38,17 +45,18 @@ class _AddExpensesState extends State<StatefulWidget>{
                                   return null;
                               }
                               else{
-                                  return "Enter the valid number";
+                                  return "Enter a new valid number";
                               }
                           },
                           onSaved: (value){
-                              _price = double.parse(value);
+                              _price = value;
                           },
                       ),
                       TextFormField(
                           decoration: InputDecoration(
                               hintText: "Name",
                           ),
+                          initialValue: _name,
                           keyboardType: TextInputType.text,
                           onSaved: (value){
                               _name = value;
@@ -67,11 +75,17 @@ class _AddExpensesState extends State<StatefulWidget>{
                           onPressed: (){
                               if (_formKey.currentState.validate()){
                                   _formKey.currentState.save();
-                                  _model.addExpense(_name, _price);
+                                  if (!mode) {
+                                      _model.updateExpense(
+                                          _index, _name, double.parse(_price));
+                                  }
+                                  else{
+                                      _model.addExpense(_name, double.parse(_price));
+                                  }
                                   Navigator.pop(context);
                               }
                           },
-                          child: Text("Add"),
+                          child: Text(buttn_text),
                       )
                   ],
               ),
@@ -79,21 +93,23 @@ class _AddExpensesState extends State<StatefulWidget>{
 
         ),
         appBar: AppBar(
-            title: Text("Add"),
+            title: Text("Update"),
         ),
     );
     }
-
 }
 
+class ChangeExpenses extends StatefulWidget{
+    ExpenseModel _model;
+    int index;
+    bool mode; // if true = "add mode"; false = "update mode"
 
-class AddExpenses extends StatefulWidget{
-    final ExpenseModel _model;
-
-    AddExpenses(this._model) {}
+    ChangeExpenses(this._model, this.mode, [this.index = 0]);
 
     @override
     State<StatefulWidget> createState() {
-    return _AddExpensesState(_model);
+    // TODO: implement createState
+    return _ChangeExpensesState(_model, mode, index);
     }
+
 }

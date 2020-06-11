@@ -1,6 +1,4 @@
-import 'package:expanses/AddExpenses.dart';
-import 'package:expanses/Expenses.dart';
-import 'package:expanses/UpdateExpenses.dart';
+import 'package:expanses/ChangeExpenses.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -93,7 +91,7 @@ class HomePage extends StatelessWidget{
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context){
-                                                      return UpdateExpenses(model, index);
+                                                      return ChangeExpenses(model, false, index);
                                                   }
                                               ),
                                           ),
@@ -115,7 +113,7 @@ class HomePage extends StatelessWidget{
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) {
-                                     return AddExpenses(model);
+                                        return ChangeExpenses(model, true);
                                     }
                                 )
                             ),
